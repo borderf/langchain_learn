@@ -17,7 +17,7 @@ with PostgresSaver.from_conn_string(DB_URI) as checkpointer:
         checkpointer=checkpointer,
     )
 
-    config = {"configurable": {"thread": "1"}}
+    config = {"configurable": {"thread_id": "1"}}
 
     results = agent.invoke({"messages": [{"role": "user", "content": "给我讲一首宋词"}]}, config=config)
     messages = results["messages"]
