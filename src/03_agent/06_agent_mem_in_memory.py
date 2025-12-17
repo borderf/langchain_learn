@@ -27,3 +27,8 @@ results = agent.invoke({"messages": [{"role": "user", "content": "再来一首"}
 messages = results["messages"]
 for message in messages:
     message.pretty_print()
+
+results = agent.invoke({"messages": [{"role": "user", "content": "还是第一首好点，再说一遍第一首吧"}]}, config=config)
+messages = results["messages"]
+for message in messages:
+    message.pretty_print()
