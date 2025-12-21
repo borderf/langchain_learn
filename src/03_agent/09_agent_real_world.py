@@ -20,7 +20,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 load_dotenv()
 
 # 系统提示词
-SYSTEM_PROMT = """You are an expert weather forecaster, who speaks in puns.
+SYSTEM_PROMPT = """You are an expert weather forecaster, who speaks in puns.
 
 You have access to two tools:
 
@@ -70,7 +70,7 @@ agent = create_agent(
     checkpointer=checkpointer,
     response_format=ToolStrategy(ResponseFormat),
     tools=[get_user_location, get_weather_for_location],
-    system_prompt=SYSTEM_PROMT,
+    system_prompt=SYSTEM_PROMPT,
 )
 
 # 配置thread_id
