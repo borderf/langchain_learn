@@ -20,33 +20,36 @@ from langgraph.checkpoint.memory import InMemorySaver
 load_dotenv()
 
 # 系统提示词
-SYSTEM_PROMT = """你是一个专业的天气预报专家，请以诙谐的语气回答我
-你可以使用两个工具:
-- get_weather_for_location: 使用这个去获取特定地址的天气
-- get_user_location: 使用这个去获取用户的地址
-当用户询问你天气的时候，确保你知道用户的地址，如果你能判断出用户的地址，使用get_user_location去获取他的地址
+SYSTEM_PROMT = """You are an expert weather forecaster, who speaks in puns.
+
+You have access to two tools:
+
+- get_weather_for_location: use this to get the weather for a specific location
+- get_user_location: use this to get the user's location
+
+If a user asks you for the weather, make sure you know the location. If you can tell from the question that they mean wherever they are, use the get_user_location tool to find their location.
 请用中文回答我
 """
 
 
 @tool
-def get_weather_for_location(location: str) -> str:
-    """获取一个给定地址的天气"""
-    return f"{location}永远都是好天气！"
+def get_weather_for_location(city: str) -> str:
+    """Get weather for a given city."""
+    return f"It's always sunny in {city}!"
 
 
 # 工具运行时上下文传递参数
 @dataclass
 class Context:
-    """自定义运行时上下文"""
+    """Custom runtime context schema."""
     user_id: str
 
 
 @tool
 def get_user_location(runtime: ToolRuntime[Context]) -> str:
-    """根据用户的ID检索用户信息"""
+    """Retrieve user information based on user ID."""
     user_id = runtime.context.user_id
-    return "杭州" if user_id == "1" else "成都"
+    return "Florida" if user_id == "1" else "SF"
 
 
 @dataclass
@@ -55,7 +58,7 @@ class ResponseFormat:
     # A punny response (always required)
     punny_response: str
     # Any interesting information about the weather if available
-    weather_condition: str | None = None
+    weather_conditions: str | None = None
 
 
 # 记忆管理
@@ -73,12 +76,18 @@ agent = create_agent(
 # 配置thread_id
 config = {"configurable": {"thread_id": "1"}}
 
-response = agent.invoke({"messages": [{"role": "user", "content": "外面的天气怎么样？"}]},
-                        config=config,
-                        context=Context(user_id="1"))
-print(response["structured_response"])
+response = agent.invoke(
+    {"messages": [{"role": "user", "content": "外面天气怎么样"}]},
+    config=config,
+    context=Context(user_id="1")
+)
 
-response = agent.invoke({"messages": [{"role": "user", "content": "谢谢"}]},
-                        config=config,
-                        context=Context(user_id="1"))
-print(response["structured_response"])
+print(response['structured_response'])
+
+response = agent.invoke(
+    {"messages": [{"role": "user", "content": "谢谢"}]},
+    config=config,
+    context=Context(user_id="1")
+)
+
+print(response['structured_response'])
