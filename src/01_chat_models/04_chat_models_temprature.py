@@ -1,3 +1,8 @@
+"""
+temperature：温度
+0-2取值，越小越保守严谨，适合数学和代码的输出
+越大越有创意开放，适合文学创作
+"""
 from langchain.chat_models import init_chat_model
 from dotenv import load_dotenv
 
