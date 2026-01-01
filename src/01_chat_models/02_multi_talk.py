@@ -1,5 +1,4 @@
 from langchain.chat_models import init_chat_model
-from langchain_classic.chains.question_answering.map_reduce_prompt import messages
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 model = init_chat_model(

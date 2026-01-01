@@ -1,6 +1,7 @@
 """
 supervisor agent
 """
+
 from langchain.tools import tool
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
@@ -19,6 +20,8 @@ model = init_chat_model(
     temperature=0.1,
 )
 
+
+# 调用规划事件的工具，调用的是subagent - calendar agent
 @tool
 def schedule_event(request: str) -> str:
     """Schedule calendar events using natural language.
@@ -33,6 +36,7 @@ def schedule_event(request: str) -> str:
     return result["messages"][-1].text
 
 
+# 管理邮件的工具，调用的是subagent - email agent
 @tool
 def manage_email(request: str) -> str:
     """Send emails using natural language.

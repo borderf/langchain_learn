@@ -1,14 +1,15 @@
 """
 supervisor agent
 """
+
 from langchain.tools import tool
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langgraph.checkpoint.memory import InMemorySaver
 from dotenv import load_dotenv
 
-from calendar_agent import calendar_agent
-from email_agent import email_agent
+from calendar_agent_HITL import calendar_agent
+from email_agent_HITL import email_agent
 
 
 load_dotenv()
@@ -19,6 +20,7 @@ model = init_chat_model(
     model_provider="openai",
     temperature=0.1,
 )
+
 
 @tool
 def schedule_event(request: str) -> str:
@@ -65,14 +67,26 @@ supervisor_agent = create_agent(
 )
 
 
-query = (
-    "Schedule a meeting with the design team next Tuesday at 2pm for 1 hour, "
-    "and send them an email reminder about reviewing the new mockups."
-)
+query = "Schedule a meeting with the design team on 2026/1/1 at 2:00pm for 1 hour, and send Alice,Bob,Cindy an email reminder about reviewing the new mockups."
 
-config = {"configurable": {"thread_id": "5"}}
+config = {"configurable": {"thread_id": "6"}}
 
-for step in supervisor_agent.stream({"messages": [{"role": "user", "content": query}]}, config=config):
+interrupts = []
+for step in supervisor_agent.stream(
+    {"messages": [{"role": "user", "content": query}]},
+    config,
+):
     for update in step.values():
-        for message in update.get("messages", []):
-            message.pretty_print()
+        if isinstance(update, dict):
+            for message in update["messages"]:
+                message.pretty_print()
+
+        else:
+            interrupt = update[0]
+            interrupts.append(interrupt)
+            # print(f"\nINTERRUPTED: {interrupt.id}")
+
+for interrupt_ in interrupts:
+    for request in interrupt_.value["action_requests"]:
+        print(f"INTERRUPTED: {interrupt_.id}")
+        print(f"{request['description']}\n")

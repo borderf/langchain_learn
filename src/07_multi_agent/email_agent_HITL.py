@@ -1,6 +1,7 @@
 """
 email agent
 """
+
 from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain.chat_models import init_chat_model
@@ -34,6 +35,7 @@ def send_email(
     # Stub: In practice, this would call SendGrid, Gmail API, etc.
     return f"Email sent to {', '.join(to)} - Subject: {subject}"
 
+
 email_agent = create_agent(
     model,
     tools=[send_email],
@@ -43,13 +45,14 @@ email_agent = create_agent(
             interrupt_on={"send_email": True},
             description_prefix="Outbound email pending approval",
         )
-    ]
+    ],
 )
 
 
-query = "Send the design team a reminder about reviewing the new mockups"
+# query = "Send the design team a reminder about reviewing the new mockups"
 
-for step in email_agent.stream({"messages": [{"role": "user", "content": query}]}):
-    for update in step.values():
-        for message in update.get("messages", []):
-            message.pretty_print()
+# for step in email_agent.stream({"messages": [{"role": "user", "content": query}]}):
+#     for update in step.values():
+#         if isinstance(update, dict):
+#             for message in update.get("messages", []):
+#                 message.pretty_print()

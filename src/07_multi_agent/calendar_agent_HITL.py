@@ -61,12 +61,13 @@ calendar_agent = create_agent(
             interrupt_on={"create_calendar_event": True},
             description_prefix="Calendar event pending approval",
         )
-    ]
+    ],
 )
 
-query = "Schedule a team meeting next Tuesday at 2pm for 1 hour"
+# query = "Schedule a team meeting next Tuesday at 2pm for 1 hour"
 
-for step in calendar_agent.stream({"messages": [{"role": "user", "content": query}]}):
-    for update in step.values():
-        for message in update.get("messages", []):
-            message.pretty_print()
+# for step in calendar_agent.stream({"messages": [{"role": "user", "content": query}]}):
+#     for update in step.values():
+#         if isinstance(update, dict):
+#             for message in update.get("messages", []):
+#                 message.pretty_print()
