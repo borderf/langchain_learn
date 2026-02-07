@@ -24,3 +24,9 @@ dependencies = [
 [[tool.uv.index]]
 url = "https://mirrors.aliyun.com/pypi/simple/"
 default = true
+
+[tool.uv.workspace]
+members = [
+    "research_agent",
+    "research_agent/backend",
+]
