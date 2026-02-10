@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from database import create_tables
+from api import router as api_router
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -25,3 +26,6 @@ app = FastAPI(
     version="0.0.1",
     lifespan=lifespan,
 )
+
+# 注册路由信息
+app.include_router(api_router)
