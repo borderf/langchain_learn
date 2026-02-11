@@ -5,7 +5,7 @@
 from datetime import datetime
 
 from snowflake import SnowflakeGenerator
-from sqlalchemy import Column, func, BOOLEAN, String
+from sqlalchemy import Column, func, BOOLEAN, String, BigInteger
 from sqlalchemy.dialects.mysql import TIMESTAMP
 from sqlmodel import SQLModel, Field
 
@@ -18,9 +18,7 @@ class ChatSession(SQLModel, table=True):
 
     id: int | None = Field(
         default_factory=lambda: next(gen),
-        primary_key=True,
-        sa_column_kwargs={"autoincrement": False},
-        index=True,
+        sa_column=Column(BigInteger, primary_key=True, nullable=False, index=True),
     )
     title: str = Field(default="新的会话", sa_column=Column(String(100), server_default="New Session", nullable=False))
     create_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now(), nullable=False))
@@ -34,11 +32,9 @@ class ChatMessages(SQLModel, table=True):
 
     id: int | None = Field(
         default_factory=lambda: next(gen),
-        primary_key=True,
-        sa_column_kwargs={"autoincrement": False},
-        index=True,
+        sa_column=Column(BigInteger, primary_key=True, nullable=False, index=True),
     )
-    session_id: int = Field(nullable=False, index=True)
+    session_id: int = Field(sa_column=Column(BigInteger, nullable=False, index=True))
     role: str = Field(max_length=50, nullable=False)
     content: str | None
     create_at: datetime = Field(sa_column=Column(TIMESTAMP, server_default=func.now(), nullable=False))

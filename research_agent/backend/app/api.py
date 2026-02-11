@@ -23,7 +23,7 @@ async def create_session(session_data: SessionCreate, session: SessionDep):
     return chat_session
 
 
-@router.post("/session/list", response_model=List[SessionResponse])
+@router.post("/session/list", response_model=SessionResponse)
 async def get_sessions(session_id: int, session: SessionDep):
     """获取会话信息"""
     chat_session = crud.get_session(session_id, session)
@@ -32,8 +32,7 @@ async def get_sessions(session_id: int, session: SessionDep):
 
     # 获取会话消息
     chat_messages = crud.get_messages_by_session_all(session_id, session)
-    chat_session.messages = chat_messages
-    return chat_session
+    return SessionResponse.model_validate({**chat_session.model_dump(), "messages": chat_messages})
 
 
 @router.post("/session/update", response_model=SessionResponse)
@@ -47,8 +46,7 @@ async def update_session(session_id: int, update_data: SessionUpdate, session: S
         raise HTTPException(status_code=500, detail="Failed to update session")
     # 获取会话消息
     messages = crud.get_messages_by_session_all(session_id, session)
-    updated_session.messages = messages
-    return updated_session
+    return SessionResponse.model_validate({**updated_session.model_dump(), "messages": messages})
 
 
 @router.post("/session/delete")
