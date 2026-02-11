@@ -58,7 +58,7 @@ async def delete_session(session_id: int, session: SessionDep):
     return {"message": "Session deleted"}
 
 
-@router.get("/session/messages", response_model=List[MessageResponse])
+@router.post("/session/messages", response_model=List[MessageResponse])
 async def get_sessions_messages(session_id: int, session: SessionDep):
     """获取会话的所有消息"""
     messages = crud.get_messages_by_session_all(session_id, session)
