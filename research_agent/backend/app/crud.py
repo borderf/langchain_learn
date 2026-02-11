@@ -33,7 +33,7 @@ def get_session(session_id: int, session: SessionDep) -> Optional[ChatSession]:
 def list_sessions(session: SessionDep, page_params: PageParams = PageParams()) -> PageResponse[ChatSession]:
     """获取所有聊天会话（分页）"""
     count_statement = select(ChatSession).where(ChatSession.is_deleted == False)
-    total = len(session.exec(count_statement).all())
+    total = len(session.exec( count_statement).all())
 
     statement = select(ChatSession).where(ChatSession.is_deleted == False).order_by(
         ChatSession.update_at.desc()).offset(page_params.offset).limit(page_params.limit)

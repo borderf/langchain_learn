@@ -6,9 +6,9 @@ from typing import Annotated, List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
-from app import crud
-from app.database import get_session
-from app.schemas import SessionResponse, SessionCreate, SessionUpdate, MessageResponse
+import crud
+from database import get_session
+from schemas import SessionResponse, SessionCreate, SessionUpdate, MessageResponse
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
 
