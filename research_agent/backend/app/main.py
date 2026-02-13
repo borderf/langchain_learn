@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from database import create_tables
 from api import router as api_router
@@ -25,6 +26,14 @@ app = FastAPI(
     description="超牛的研究智能体",
     version="0.0.1",
     lifespan=lifespan,
+)
+# 增加 CORS 配置
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # 注册路由信息
