@@ -23,8 +23,14 @@ async def create_session(session_data: SessionCreate, session: SessionDep):
     return chat_session
 
 
-@router.post("/session/list", response_model=SessionResponse)
-async def get_sessions(session_id: int, session: SessionDep):
+@router.post("/session/list", response_model=List[SessionResponse])
+async def list_session(session: SessionDep):
+    """获取会话列表"""
+    chat_sessions = crud.list_sessions(session)
+    return chat_sessions
+
+@router.post("/session/get", response_model=SessionResponse)
+async def get_session(session_id: int, session: SessionDep):
     """获取会话信息"""
     chat_session = crud.get_session(session_id, session)
     if not chat_session:

@@ -30,16 +30,11 @@ def get_session(session_id: int, session: SessionDep) -> Optional[ChatSession]:
     return session.get(ChatSession, session_id)
 
 
-def list_sessions(session: SessionDep, page_params: PageParams = PageParams()) -> PageResponse[ChatSession]:
+def list_sessions(session: SessionDep) -> List[ChatSession]:
     """获取所有聊天会话（分页）"""
-    count_statement = select(ChatSession).where(ChatSession.is_deleted == False)
-    total = len(session.exec( count_statement).all())
-
-    statement = select(ChatSession).where(ChatSession.is_deleted == False).order_by(
-        ChatSession.update_at.desc()).offset(page_params.offset).limit(page_params.limit)
+    statement = select(ChatSession).where(ChatSession.is_deleted == False)
     items = session.exec(statement).all()
-
-    return PageResponse.create(items, total, page_params)
+    return items
 
 
 def get_session_with_messages(session_id: int, session: SessionDep, page_params: PageParams = PageParams()) -> Optional[
