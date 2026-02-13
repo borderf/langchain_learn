@@ -56,117 +56,101 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted, nextTick, watch } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, nextTick } from 'vue'
 import { sessionApi } from './api'
+import type { Session, Message } from './types'
 
-export default {
-  name: 'App',
-  setup() {
-    const sessions = ref([])
-    const currentSession = ref(null)
-    const messages = ref([])
-    const inputMessage = ref('')
-    const loading = ref(false)
-    const messagesContainer = ref(null)
+const sessions = ref<Session[]>([])
+const currentSession = ref<Session | null>(null)
+const messages = ref<Message[]>([])
+const inputMessage = ref('')
+const loading = ref(false)
+const messagesContainer = ref<HTMLDivElement | null>(null)
 
-    const loadSessions = async () => {
-      try {
-        const res = await sessionApi.list()
-        sessions.value = res.data
-      } catch (error) {
-        console.error('加载会话列表失败:', error)
-      }
-    }
-
-    const createNewSession = async () => {
-      try {
-        const res = await sessionApi.create()
-        sessions.value.unshift(res.data)
-        selectSession(res.data.id)
-      } catch (error) {
-        console.error('创建会话失败:', error)
-      }
-    }
-
-    const selectSession = async (sessionId) => {
-      try {
-        const res = await sessionApi.get(sessionId)
-        currentSession.value = res.data
-        messages.value = res.data.messages || []
-        scrollToBottom()
-      } catch (error) {
-        console.error('获取会话详情失败:', error)
-      }
-    }
-
-    const deleteSession = async (sessionId) => {
-      if (!confirm('确定删除此会话?')) return
-      try {
-        await sessionApi.delete(sessionId)
-        sessions.value = sessions.value.filter(s => s.id !== sessionId)
-        if (currentSession.value?.id === sessionId) {
-          currentSession.value = null
-          messages.value = []
-        }
-      } catch (error) {
-        console.error('删除会话失败:', error)
-      }
-    }
-
-    const sendMessage = async () => {
-      if (!inputMessage.value.trim() || loading.value) return
-
-      const content = inputMessage.value.trim()
-      inputMessage.value = ''
-      loading.value = true
-
-      messages.value.push({
-        id: Date.now(),
-        role: 'user',
-        content: content,
-        session_id: currentSession.value.id
-      })
-      scrollToBottom()
-
-      try {
-        const res = await sessionApi.get(currentSession.value.id)
-        messages.value = res.data.messages || []
-        scrollToBottom()
-      } catch (error) {
-        console.error('发送消息失败:', error)
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const scrollToBottom = () => {
-      nextTick(() => {
-        if (messagesContainer.value) {
-          messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
-        }
-      })
-    }
-
-    onMounted(() => {
-      loadSessions()
-    })
-
-    return {
-      sessions,
-      currentSession,
-      messages,
-      inputMessage,
-      loading,
-      messagesContainer,
-      loadSessions,
-      createNewSession,
-      selectSession,
-      deleteSession,
-      sendMessage
-    }
+const loadSessions = async () => {
+  try {
+    const res = await sessionApi.list()
+    sessions.value = res.data
+  } catch (error) {
+    console.error('加载会话列表失败:', error)
   }
 }
+
+const createNewSession = async () => {
+  try {
+    const res = await sessionApi.create()
+    sessions.value.unshift(res.data)
+    selectSession(res.data.id)
+  } catch (error) {
+    console.error('创建会话失败:', error)
+  }
+}
+
+const selectSession = async (sessionId: string) => {
+  try {
+    const res = await sessionApi.get(sessionId)
+    currentSession.value = res.data
+    messages.value = res.data.messages || []
+    scrollToBottom()
+  } catch (error) {
+    console.error('获取会话详情失败:', error)
+  }
+}
+
+const deleteSession = async (sessionId: string) => {
+  if (!confirm('确定删除此会话?')) return
+  try {
+    await sessionApi.delete(sessionId)
+    sessions.value = sessions.value.filter(s => s.id !== sessionId)
+    if (currentSession.value?.id === sessionId) {
+      currentSession.value = null
+      messages.value = []
+    }
+  } catch (error) {
+    console.error('删除会话失败:', error)
+  }
+}
+
+const sendMessage = async () => {
+  if (!inputMessage.value.trim() || loading.value) return
+
+  const content = inputMessage.value.trim()
+  inputMessage.value = ''
+  loading.value = true
+
+  messages.value.push({
+    id: Date.now().toString(),
+    role: 'user',
+    content: content,
+    session_id: currentSession.value!.id,
+    create_at: new Date().toISOString(),
+    update_at: null
+  })
+  scrollToBottom()
+
+  try {
+    const res = await sessionApi.get(currentSession.value!.id)
+    messages.value = res.data.messages || []
+    scrollToBottom()
+  } catch (error) {
+    console.error('发送消息失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    }
+  })
+}
+
+onMounted(() => {
+  loadSessions()
+})
 </script>
 
 <style>
