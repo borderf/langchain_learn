@@ -2,10 +2,11 @@
 针对数据库的操作
 """
 from sqlmodel import create_engine, Session
+from app.config import settings
 
 from models import SQLModel
 
-engine = create_engine("mysql+pymysql://root:123456@localhost/langchain?charset=utf8", echo=True)
+engine = create_engine(settings.database_url, echo=True)
 
 
 def create_tables():
