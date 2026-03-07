@@ -23,5 +23,6 @@ while True:
             {"role": "user", "content": user_input}
         ]
     })
+    print("lallaal")
     for message in response["messages"]:
         message.pretty_print()
